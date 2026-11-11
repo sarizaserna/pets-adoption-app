@@ -11,7 +11,11 @@ import {
 } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { ITEMS } from '../data/mockData';
+import { EmptyView } from '../components/EmptyView';
+import { ErrorView } from '../components/ErrorView';
+import { LoadingView } from '../components/LoadingView';
+import { useItems } from '../hooks/useItems';
+import { getErrorMessage } from '../services/api';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { Item } from '../types';
 import type { HomeStackParamList } from '../navigation/types';
@@ -46,7 +50,20 @@ function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
 
 export function HomeScreen(): React.JSX.Element {
   const navigation = useNavigation<HomeScreenNavProp>();
-  const items = ITEMS;
+  const { data, isLoading, isError, error, isFetching, refetch } = useItems();
+
+  // 1) Primera carga: todavía no hay nada que mostrar.
+  if (isLoading) {
+    return <LoadingView message="Buscando mascotas..." />;
+  }
+
+  // 2) Falló la petición: mensaje claro + botón para volver a intentar.
+  if (isError) {
+    return <ErrorView message={getErrorMessage(error)} onRetry={refetch} />;
+  }
+
+  // 3) Éxito. `data` puede ser undefined para TypeScript, por eso el `?? []`.
+  const items = data ?? [];
 
   const renderItem: ListRenderItem<Item> = ({ item }) => (
     <ItemCard
@@ -65,6 +82,14 @@ export function HomeScreen(): React.JSX.Element {
         renderItem={renderItem}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        refreshing={isFetching}
+        onRefresh={refetch}
+        ListEmptyComponent={
+          <EmptyView
+            title="Aún no hay mascotas"
+            subtitle="Toca el + de arriba para registrar la primera."
+          />
+        }
         ListHeaderComponent={
           <Text style={styles.sectionLabel}>
             {items.length} Mascotas disponibles en el refugio
