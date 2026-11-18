@@ -27,7 +27,7 @@ function HomeStackNavigator(): React.JSX.Element {
         name="HomeList"
         component={HomeScreen}
         options={({ navigation }) => ({
-          title: 'Refugio',
+          title: 'Huellitas',
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Create')}

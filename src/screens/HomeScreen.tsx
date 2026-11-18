@@ -15,6 +15,7 @@ import { EmptyView } from '../components/EmptyView';
 import { ErrorView } from '../components/ErrorView';
 import { LoadingView } from '../components/LoadingView';
 import { useItems } from '../hooks/useItems';
+import { formatListing } from '../utils/format';
 import { getErrorMessage } from '../services/api';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { Item } from '../types';
@@ -41,6 +42,9 @@ function ItemCard({ item, onPress }: ItemCardProps): React.JSX.Element {
         </Text>
         <Text style={styles.cardDescription} numberOfLines={2}>
           {item.description}
+        </Text>
+        <Text style={[styles.cardBadge, item.listing === 'sale' && styles.cardBadgeSale]}>
+          {formatListing(item)}
         </Text>
       </View>
       <Text style={styles.chevron}>›</Text>
@@ -92,7 +96,7 @@ export function HomeScreen(): React.JSX.Element {
         }
         ListHeaderComponent={
           <Text style={styles.sectionLabel}>
-            {items.length} Mascotas disponibles en el refugio
+            {items.length} mascotas en adopción y venta
           </Text>
         }
       />
@@ -147,6 +151,13 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     ...TYPOGRAPHY.caption,
+  },
+  cardBadge: {
+    ...TYPOGRAPHY.label,
+    color: COLORS.success,
+  },
+  cardBadgeSale: {
+    color: COLORS.warning,
   },
   chevron: {
     ...TYPOGRAPHY.h2,

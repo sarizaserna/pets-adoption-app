@@ -9,6 +9,7 @@ import { ErrorView } from '../components/ErrorView';
 import { LoadingView } from '../components/LoadingView';
 import { useItemById } from '../hooks/useItems';
 import { getErrorMessage } from '../services/api';
+import { formatListing } from '../utils/format';
 
 type DetailRouteProp = RouteProp<HomeStackParamList, 'HomeDetail'>;
 
@@ -57,6 +58,7 @@ export function DetailScreen(): React.JSX.Element {
           <Text style={styles.badge}>Raza: {item.breed}</Text>
           <Text style={styles.badge}>Edad: {item.age}</Text>
           <Text style={styles.badge}>Género: {item.gender}</Text>
+          <Text style={styles.badge}>{formatListing(item)}</Text>
         </View>
       </View>
 

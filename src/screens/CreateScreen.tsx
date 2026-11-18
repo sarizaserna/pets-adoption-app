@@ -21,11 +21,17 @@ import { useCreateItem } from '../hooks/useCreateItem';
 import { getErrorMessage } from '../services/api';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
+import type { Listing } from '../types';
 
 type CreateScreenNavProp = NativeStackNavigationProp<HomeStackParamList, 'Create'>;
 
 type Gender = 'Macho' | 'Hembra';
 const GENDERS: Gender[] = ['Macho', 'Hembra'];
+
+const LISTINGS: { value: Listing; label: string }[] = [
+  { value: 'adoption', label: 'Adopción' },
+  { value: 'sale', label: 'Venta' },
+];
 
 export function CreateScreen(): React.JSX.Element {
   const navigation = useNavigation<CreateScreenNavProp>();
@@ -36,9 +42,15 @@ export function CreateScreen(): React.JSX.Element {
   const [age, setAge] = useState('');
   const [gender, setGender] = useState<Gender>('Macho');
   const [description, setDescription] = useState('');
+  const [listing, setListing] = useState<Listing>('adoption');
+  const [price, setPrice] = useState('');
 
-  // El botón solo se activa con nombre y mientras NO se esté enviando.
-  const canSubmit = name.trim().length > 0 && !isPending;
+  // "150.000" o "150000" -> 150000 (se quitan todos los caracteres que no sean dígitos)
+  const priceNumber = Number(price.replace(/\D/g, ''));
+
+  // El botón solo se activa con nombre, precio válido si es venta, y sin estar enviando.
+  const canSubmit =
+    name.trim().length > 0 && (listing === 'adoption' || priceNumber > 0) && !isPending;
 
   function handleSubmit(): void {
     if (!canSubmit) return;
@@ -51,6 +63,8 @@ export function CreateScreen(): React.JSX.Element {
         age: age.trim() || 'Sin dato',
         gender,
         description: description.trim() || 'Sin descripción por ahora.',
+        listing,
+        price: listing === 'sale' ? priceNumber : 0,
         // Foto temporal. En la semana 11 se reemplaza por la cámara/galería.
         image: `https://picsum.photos/seed/${encodeURIComponent(cleanName)}/400/300`,
       },
@@ -126,6 +140,41 @@ export function CreateScreen(): React.JSX.Element {
             ))}
           </View>
         </View>
+
+        <View style={styles.field}>
+          <Text style={styles.fieldLabel}>Tipo</Text>
+          <View style={styles.chipRow}>
+            {LISTINGS.map((option) => (
+              <Pressable
+                key={option.value}
+                style={[styles.chip, listing === option.value && styles.chipActive]}
+                onPress={() => setListing(option.value)}
+              >
+                <Text
+                  style={[styles.chipText, listing === option.value && styles.chipTextActive]}
+                >
+                  {option.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {listing === 'sale' && (
+          <View style={styles.field}>
+            <Text style={styles.fieldLabel}>
+              Precio (COP) <Text style={styles.required}>*</Text>
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={price}
+              onChangeText={setPrice}
+              placeholder="Ej: 150000"
+              placeholderTextColor={COLORS.textMuted}
+              keyboardType="numeric"
+            />
+          </View>
+        )}
 
         <View style={styles.field}>
           <Text style={styles.fieldLabel}>Descripción</Text>
