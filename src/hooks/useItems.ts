@@ -21,3 +21,16 @@ export function useItems() {
     },
   });
 }
+
+// Una sola mascota por id: GET {baseURL}/pets/:id
+// La queryKey incluye el id, así cada mascota tiene su propia entrada en la caché.
+export function useItemById(id: string) {
+  return useQuery({
+    queryKey: [...ITEMS_QUERY_KEY, id],
+    queryFn: async (): Promise<Item> => {
+      const { data } = await apiClient.get<Item>(`/pets/${id}`);
+      return data;
+    },
+    enabled: id.length > 0,
+  });
+}

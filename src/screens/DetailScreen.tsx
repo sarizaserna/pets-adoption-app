@@ -5,8 +5,10 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
 import { useSavedStore } from '../stores/savedStore';
-import { ITEMS } from '../data/mockData';
-import type { Item } from '../types';
+import { ErrorView } from '../components/ErrorView';
+import { LoadingView } from '../components/LoadingView';
+import { useItemById } from '../hooks/useItems';
+import { getErrorMessage } from '../services/api';
 
 type DetailRouteProp = RouteProp<HomeStackParamList, 'HomeDetail'>;
 
@@ -14,7 +16,8 @@ export function DetailScreen(): React.JSX.Element {
   const route = useRoute<DetailRouteProp>();
   const { id } = route.params;
 
-  const item: Item | undefined = ITEMS.find((i) => i.id === id);
+  // Datos frescos del servidor para esta mascota (con su propio loading/error).
+  const { data: item, isLoading, isError, error, refetch } = useItemById(id);
 
   const isItemSaved = useSavedStore((state) => state.isItemSaved);
   const addItem = useSavedStore((state) => state.addItem);
@@ -29,6 +32,14 @@ export function DetailScreen(): React.JSX.Element {
       addItem(item);
     }
   };
+
+  if (isLoading) {
+    return <LoadingView message="Cargando detalle..." />;
+  }
+
+  if (isError) {
+    return <ErrorView message={getErrorMessage(error)} onRetry={refetch} />;
+  }
 
   if (!item) {
     return (
