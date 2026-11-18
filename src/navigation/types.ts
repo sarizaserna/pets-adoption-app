@@ -9,4 +9,5 @@ export type HomeStackParamList = {
     id: string;
     name: string;
   };
+  Create: undefined;
 };

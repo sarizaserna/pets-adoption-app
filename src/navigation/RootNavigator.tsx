@@ -3,6 +3,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { CreateScreen } from '../screens/CreateScreen';
 import { DetailScreen } from '../screens/DetailScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SavedScreen } from '../screens/SavedScreen';
@@ -24,12 +26,28 @@ function HomeStackNavigator(): React.JSX.Element {
       <HomeStack.Screen
         name="HomeList"
         component={HomeScreen}
-        options={{ title: 'Refugio' }}
+        options={({ navigation }) => ({
+          title: 'Refugio',
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate('Create')}
+              accessibilityLabel="Agregar mascota"
+              testID="add-button"
+            >
+              <Text style={styles.headerButton}>+</Text>
+            </Pressable>
+          ),
+        })}
       />
       <HomeStack.Screen
         name="HomeDetail"
         component={DetailScreen}
         options={({ route }) => ({ title: route.params.name })}
+      />
+      <HomeStack.Screen
+        name="Create"
+        component={CreateScreen}
+        options={{ title: 'Nueva mascota', presentation: 'modal' }}
       />
     </HomeStack.Navigator>
   );
@@ -74,3 +92,12 @@ export function RootNavigator(): React.JSX.Element {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  headerButton: {
+    color: COLORS.accent,
+    fontSize: 28,
+    fontWeight: '300',
+    paddingHorizontal: 8,
+  },
+});
