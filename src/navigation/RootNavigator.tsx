@@ -56,7 +56,7 @@ function HomeStackNavigator(): React.JSX.Element {
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export function RootNavigator(): React.JSX.Element {
-  const savedCount = useSavedStore((state) => state.items.length);
+  const savedCount = useSavedStore((state) => state.savedIds.length);
 
   return (
     <Tab.Navigator

@@ -12,6 +12,10 @@ import {
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { Item } from '../types';
 import { useSavedStore } from '../stores/savedStore';
+import { ErrorView } from '../components/ErrorView';
+import { LoadingView } from '../components/LoadingView';
+import { useItems } from '../hooks/useItems';
+import { getErrorMessage } from '../services/api';
 
 interface SavedItemProps {
   item: Item;
@@ -42,12 +46,25 @@ function SavedItem({ item, onRemove }: SavedItemProps): React.JSX.Element {
 }
 
 export function SavedScreen(): React.JSX.Element {
-  const items = useSavedStore((state) => state.items);
-  const removeItem = useSavedStore((state) => state.removeItem);
+  // Los datos vienen de la caché de TanStack Query (misma query que la lista).
+  const { data, isLoading, isError, error, isFetching, refetch } = useItems();
+  // Zustand solo aporta los ids marcados como favoritos.
+  const savedIds = useSavedStore((state) => state.savedIds);
+  const removeSaved = useSavedStore((state) => state.removeSaved);
   const clearAll = useSavedStore((state) => state.clearAll);
 
+  if (isLoading) {
+    return <LoadingView message="Cargando favoritos..." />;
+  }
+
+  if (isError) {
+    return <ErrorView message={getErrorMessage(error)} onRetry={refetch} />;
+  }
+
+  const items = (data ?? []).filter((item) => savedIds.includes(item.id));
+
   const renderItem: ListRenderItem<Item> = ({ item }) => (
-    <SavedItem item={item} onRemove={() => removeItem(item.id)} />
+    <SavedItem item={item} onRemove={() => removeSaved(item.id)} />
   );
 
   return (
@@ -58,6 +75,8 @@ export function SavedScreen(): React.JSX.Element {
         renderItem={renderItem}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        refreshing={isFetching}
+        onRefresh={refetch}
         ListHeaderComponent={() => 
           items.length > 0 ? (
             <View style={styles.header}>

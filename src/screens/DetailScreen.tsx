@@ -19,18 +19,13 @@ export function DetailScreen(): React.JSX.Element {
   // Datos frescos del servidor para esta mascota (con su propio loading/error).
   const { data: item, isLoading, isError, error, refetch } = useItemById(id);
 
-  const isItemSaved = useSavedStore((state) => state.isItemSaved);
-  const addItem = useSavedStore((state) => state.addItem);
-  const removeItem = useSavedStore((state) => state.removeItem);
-
-  const isSaved = isItemSaved(id);
+  // Se selecciona un DATO (true/false), no una función: así el botón se
+  // actualiza al instante cuando cambian los favoritos.
+  const isSaved = useSavedStore((state) => state.savedIds.includes(id));
+  const toggleSaved = useSavedStore((state) => state.toggleSaved);
 
   const handleToggleSave = (): void => {
-    if (isSaved) {
-      removeItem(id);
-    } else if (item) {
-      addItem(item);
-    }
+    toggleSaved(id);
   };
 
   if (isLoading) {
