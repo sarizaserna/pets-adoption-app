@@ -24,7 +24,7 @@ importers:
         specifier: 7.17.10
         version: 7.17.10(@react-navigation/native@7.3.8(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native-safe-area-context@5.11.1(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native-screens@4.30.1(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@tanstack/react-query':
-        specifier: ^5.108.0
+        specifier: 5.108.0
         version: 5.108.0(@types/react@19.3.0)(react@19.3.0)
       axios:
         specifier: 1.21.1
