@@ -1,7 +1,8 @@
 // src/screens/DetailScreen.tsx
 import React from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRoute, type RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../theme';
 import type { HomeStackParamList } from '../navigation/types';
 import { useSavedStore } from '../stores/savedStore';
@@ -12,8 +13,10 @@ import { getErrorMessage } from '../services/api';
 import { formatListing } from '../utils/format';
 
 type DetailRouteProp = RouteProp<HomeStackParamList, 'HomeDetail'>;
+type DetailNavProp = NativeStackNavigationProp<HomeStackParamList, 'HomeDetail'>;
 
 export function DetailScreen(): React.JSX.Element {
+  const navigation = useNavigation<DetailNavProp>();
   const route = useRoute<DetailRouteProp>();
   const { id } = route.params;
 
@@ -64,6 +67,17 @@ export function DetailScreen(): React.JSX.Element {
 
       <Pressable
         style={({ pressed }) => [
+          styles.editButton,
+          pressed && styles.saveButtonPressed,
+        ]}
+        onPress={() => navigation.navigate('Edit', { item })}
+        testID="edit-button"
+      >
+        <Text style={styles.editButtonText}>✏️ Editar mascota</Text>
+      </Pressable>
+
+      <Pressable
+        style={({ pressed }) => [
           styles.saveButton,
           isSaved && styles.saveButtonActive,
           pressed && styles.saveButtonPressed,
@@ -87,7 +101,7 @@ const styles = StyleSheet.create({
     gap: SPACING.lg,
   },
   heroImage: {
-    width: '100vw',
+    width: '100%',
     height: 220,
     borderRadius: RADIUS.lg,
     backgroundColor: COLORS.card,
@@ -127,6 +141,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+  editButton: {
+    backgroundColor: COLORS.accent,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    ...TYPOGRAPHY.body,
+    fontWeight: '700',
+    color: COLORS.background,
+  },
   saveButton: {
     backgroundColor: COLORS.card,
     borderRadius: RADIUS.md,
@@ -134,7 +159,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     paddingVertical: SPACING.md,
     alignItems: 'center',
-    marginTop: SPACING.md,
   },
   saveButtonActive: {
     backgroundColor: COLORS.error,

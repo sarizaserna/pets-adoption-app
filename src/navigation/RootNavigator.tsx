@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { CreateScreen } from '../screens/CreateScreen';
 import { DetailScreen } from '../screens/DetailScreen';
+import { EditScreen } from '../screens/EditScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SavedScreen } from '../screens/SavedScreen';
 import { COLORS } from '../theme';
@@ -17,6 +18,7 @@ const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 function HomeStackNavigator(): React.JSX.Element {
   return (
     <HomeStack.Navigator
+      initialRouteName="HomeList"
       screenOptions={{
         headerStyle: { backgroundColor: COLORS.surface },
         headerTintColor: COLORS.accent,
@@ -48,6 +50,11 @@ function HomeStackNavigator(): React.JSX.Element {
         name="Create"
         component={CreateScreen}
         options={{ title: 'Nueva mascota', presentation: 'modal' }}
+      />
+      <HomeStack.Screen
+        name="Edit"
+        component={EditScreen}
+        options={{ title: 'Editar mascota', presentation: 'modal' }}
       />
     </HomeStack.Navigator>
   );
