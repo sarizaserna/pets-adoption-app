@@ -1,3 +1,5 @@
+import type { Item } from '../types';
+
 export type RootTabParamList = {
   Home: undefined;
   Saved: undefined;
@@ -10,4 +12,7 @@ export type HomeStackParamList = {
     name: string;
   };
   Create: undefined;
+  Edit: {
+    item: Item;
+  };
 };
